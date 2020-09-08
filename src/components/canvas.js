@@ -69,13 +69,13 @@ class Canvas extends Component {
     this.ctx.lineJoin = 'round';
     this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 5;
-  }
+  } 
 
   createImg(){
     var d = new Date();
     var n = d.toString();
     var canvas = document.getElementById('myCanvas');
-    var dataURL = canvas.toDataURL("image/png");
+    var dataURL = canvas.toDataURL("image/svg");
 
     // Generate the body request
     var datos = {
@@ -111,6 +111,10 @@ class Canvas extends Component {
     }
   };
 
+  handleChange(event) {
+    this.setState({color: event.target.value})
+  }
+
   render() {
     console.log(this.state.color)
     console.log(this.state.image)
@@ -128,9 +132,8 @@ class Canvas extends Component {
         />
         <img src={this.state.image}/>
         <button onClick={ () => this.createImg()}> Send </button>
-        <input type="text" id="hex" />
-        <input type="color" id="color"/>
-        <input type="file" name="myImage" onChange={this.onImageChange} />
+        <input type="color" id="color" value={this.state.color} onChange={this.handleChange.bind(this)}/>
+        <input type="file" name="myImage" onChange={this.onImageChange}/>
       </div>
     );
   }
