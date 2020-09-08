@@ -1,0 +1,14 @@
+body {
+  font-family: 'Roboto Condensed', serif;
+  background-color: aqua;
+}
+.main {
+  display: flex;
+  justify-content: center;
+}
+.color-guide {
+  margin: 20px 40px;
+}
+h5 {
+  margin-bottom: 10px;
+}
