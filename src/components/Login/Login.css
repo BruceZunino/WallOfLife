@@ -1,0 +1,20 @@
+.logoContainer{
+}
+
+.formLogin{
+    width: 40%;
+    margin-top: 5%;
+}
+
+.loginButton{
+    margin-bottom: 2%;
+    border-radius: 30px;
+}
+
+.registerButton{
+    border-radius: 30px;
+}
+
+.skipButton{
+
+}
