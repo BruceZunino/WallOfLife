@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
+import Styles from './canvas.css'
+
 
 class Canvas extends Component {
   constructor(props) {
     super(props);
     this.state={
-      image: 'http://localhost:3000/c6a34f78-aa3f-4940-8e09-457066609c99',
+      image: null,
       color: '#000000',
-      lineWidth: 1
+      stroke: 10,
+      erase: false
     }
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
@@ -15,14 +18,18 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    // Here we set up the properties of the canvas element.  
+    // Here we set up the properties of the canvas element.
     this.canvas.width = 700;
     this.canvas.height = 700;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.lineJoin = 'round';
     this.ctx.lineCap = 'round';
-    this.ctx.lineWidth = this.state.lineWidth;
-  } 
+    this.ctx.lineWidth = 10;
+  }
+
+  componentDidUpdate() {
+    this.ctx.lineWidth = this.state.stroke;
+  }
 
   isPainting = false;
   line = [];
@@ -38,6 +45,7 @@ class Canvas extends Component {
   onMouseMove({ nativeEvent }) {
     if (this.isPainting) {
       const { offsetX, offsetY } = nativeEvent;
+      
       const offSetData = { offsetX, offsetY };
       // Set the start and stop position of the paint event.
       const positionData = {
@@ -57,6 +65,8 @@ class Canvas extends Component {
 
   paint(prevPos, currPos, strokeStyle) {
     const { offsetX, offsetY } = currPos;
+    console.log('offsetX: ',offsetX);
+    console.log('offsetY: ',offsetY);
     const { offsetX: x, offsetY: y } = prevPos;
 
     this.ctx.beginPath();
@@ -68,6 +78,12 @@ class Canvas extends Component {
     // Visualize the line using the strokeStyle
     this.ctx.stroke();
     this.prevPos = { offsetX, offsetY };
+
+    if(this.state.erase === true){
+      this.ctx.globalCompositeOperation="destination-out";
+    }else{
+      this.ctx.globalCompositeOperation="source-over";
+    }
   }
 
   createImg(){
@@ -104,44 +120,65 @@ class Canvas extends Component {
   }
 
   onImageChange = event => {
-    if (event.target.files && event.target.files[0]) {
-      let img = event.target.files[0];
-      this.setState({
-        image: URL.createObjectURL(img)
-      });
+    var ctx = document.getElementById('myCanvas').getContext('2d')
+    let img = new Image()
+    let f = event.target.files[0]
+    let url = window.URL || window.webkitURL
+    let src = url.createObjectURL(f);
+
+    img.src = src;
+    img.onload = function(){
+      ctx.drawImage(img,0,0);
+      url.revokeObjectURL(src);
     }
-    var ctx = document.getElementById('myCanvas').getContext('2d');
-      var img = new Image();
-      img.onload = function(){
-        ctx.drawImage(img,0,0);
-      };
-      img.src = 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fsearchengineland.com%2Ffigz%2Fwp-content%2Fseloads%2F2015%2F12%2Fgoogle-amp-fast-speed-travel-ss-1920-800x450.jpg&imgrefurl=https%3A%2F%2Fsearchengineland.com%2Fgoogle-dropped-google-instant-search-279674&tbnid=OHRy5bbkAcn8vM&vet=12ahUKEwjWkcWP39zrAhU6ALkGHQHPBVQQMygIegUIARDbAQ..i&docid=jZo3IQfO3ipiXM&w=800&h=450&q=google%20images&ved=2ahUKEwjWkcWP39zrAhU6ALkGHQHPBVQQMygIegUIARDbAQ';
   }
+
+  erase(){
+    this.setState({ erase:  true })
+  }
+
 
   handleChange(event) {
     this.setState({color: event.target.value})
+    this.setState({erase: false})
+  }
+
+  handleChange2(event) {
+    this.setState({stroke: event.target.value})
   }
 
   render() {
     console.log(this.state.image)
     return (
-      <div>
-        <canvas
-          id={'myCanvas'}
-          ref={(ref) => (this.canvas = ref)}
-          style={{ border: "5px solid #d3d3d3",  backgroundRepeat: "no-repeat", backgroundSize: "100% 100%" }}
-          onMouseDown={this.onMouseDown}
-          onMouseLeave={this.endPaintEvent}
-          onMouseUp={this.endPaintEvent}
-          onMouseMove={this.onMouseMove}
-        />
-        <button onClick={ () => this.createImg()}> Send </button>
-        <button  onClick={ () => this.setState({ image: null },  this.componentDidMount())}>Clear</button>
-        <button  value={10} onClick={ () => this.setState({ lineWidth: 10}, this.componentDidMount())}></button>
-        <input type="color" id="color" value={this.state.color} onChange={this.handleChange.bind(this)}/>
-        <input type="file" name="myImage" onChange={this.onImageChange}/>
+      <div className="container-fluid">
+        <div className="row">
+          <canvas
+            className=" col-lg-6 createCanvas"
+            id={'myCanvas'}
+            ref={(ref) => (this.canvas = ref)}
+            style={{ border: "5px solid #d3d3d3", backgroundColor: "red"}}
+            onMouseDown={this.onMouseDown}
+            onMouseLeave={this.endPaintEvent}
+            onMouseUp={this.endPaintEvent}
+            onMouseMove={this.onMouseMove}
+          />
+        </div>
+        <div className="row">
+          <main>
+            <section class="colors">
+              <input className="color-picker" type="color" id="color" value={this.state.color} onChange={this.handleChange.bind(this)}/>
+            </section>
+            <section class="thickness">
+              <input type="number" class="stroke-weight" value={this.state.stroke} onChange={this.handleChange2.bind(this)}/>
+            </section>
+            <button class="clear" onClick={ () => this.setState({ image: null },  this.componentDidMount())}>X</button>
+            <button  className="editSend" onClick={ () => this.createImg()}>Send</button>
+            <button  className="editSend" onClick={ () => this.erase()}>Borrar</button>
+            <input className="editImg" type="file" name="myImage" onChange={this.onImageChange}/>
+          </main>
+        </div>
       </div>
     );
   }
-} 
+}
 export default Canvas;

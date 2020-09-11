@@ -1,0 +1,37 @@
+.createWall{
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    align-items: center;
+    box-shadow: 1px 0px 26px -5px #000000;
+}
+
+.createWallRow{
+    position: fixed;
+    bottom: 10%;
+    right: 10%;
+}
+
+.progress-bar-vertical{
+    top: 50%;
+    left: -10%;
+}
+
+.btn-primary {
+    border: none !important;
+    outline: none !important;
+}
+
+.canvas{
+    position: absolute;
+    height: 50vh;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 50% !important;
+}
+
+@media only screen and (max-height: 800px){
+    .canvas{
+        height: 100vh;
+    } 
+}

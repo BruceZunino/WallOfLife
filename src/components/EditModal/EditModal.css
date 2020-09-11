@@ -1,0 +1,35 @@
+.header {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: $header-height;
+    padding: 1.5rem 2rem;
+
+    background-color: $color-primary;
+    
+    transition: .3s ease-in-out;
+    
+    &.is-hidden {
+        transform: translateY(100%);
+    }
+    
+    &__logo {
+        margin-right: auto;
+        
+        &__text {
+            font-size: 22px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+    }
+    
+    &__trigger {
+        position: absolute;
+    }
+}
