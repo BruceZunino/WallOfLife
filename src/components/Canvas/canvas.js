@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Styles from './canvas.css'
 import $ from 'jquery'
 import Webcam from 'react-webcam';
+import Cropper from 'react-cropper';
 
 
 class Canvas extends Component {
@@ -12,7 +13,9 @@ class Canvas extends Component {
       color: '#000000',
       stroke: 10,
       erase: false,
-      webcamEnabled: false
+      webcamEnabled: false,
+      cropImage: false,
+      srcImage: ''
     }
 
     // Binding this functions, we let them work
@@ -137,11 +140,22 @@ class Canvas extends Component {
     let src = url.createObjectURL(f);
 
     img.src = src;
+    this.setState({ cropImage: true })
+    this.setState({ srcImage: src })
 
     img.onload = function(){
       ctx.drawImage(img,0,0);
       url.revokeObjectURL(src);
     }
+  }
+
+  _crop() {
+    // image in dataUrl
+    console.log(this.cropper.getCroppedCanvas().toDataURL());
+  }
+
+  onCropperInit(cropper) {
+    this.cropper = cropper;
   }
 
   erase(){
@@ -180,7 +194,6 @@ class Canvas extends Component {
   enableWebcam = () => this.setState({ webcamEnabled: true });
 
   render() {
-    console.log(this.state.cap)
     return (
       <div className="container-fluid">
         <div className="row canvas">
@@ -193,6 +206,20 @@ class Canvas extends Component {
             onMouseUp={this.endPaintEvent}
             onMouseMove={this.onMouseMove}
           />
+          { this.state.cropImage ? 
+          <div >
+            <Cropper
+            src={this.state.srcImage}
+            style={{height: 400, width: '100%', display: "flex", justifyContent: "center", zIndex: 100}}
+            initialAspectRatio={16 / 9}
+            guides={false}
+            crop={this._crop.bind(this)}
+            onInitialized={this.onCropperInit.bind(this)}
+            /> 
+            <button>Ok</button> 
+          </div>
+          : 
+          null}
           { this.state.webcamEnabled ?
           <div>
             <Webcam
