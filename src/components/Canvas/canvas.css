@@ -1,9 +1,6 @@
-.createCanvas{
-    position: absolute;
-    height: 50vh;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    left: 50% !important;
+.canvas{
+    display: flex;
+    justify-content: center;
 }
 
 main{
@@ -107,3 +104,4 @@ main .editSend{
     outline:none;
     cursor:pointer
 }
+  

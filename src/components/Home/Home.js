@@ -28,13 +28,12 @@ class Home extends Component {
               </button>
             </nav>
           </div>
-          <div className="row">
+          <div className="row canvas">
           {this.state.createWall 
           ?
             <Canvas/>
           :
             <canvas
-              className="col-lg-6 col-ms-12 canvas"
               id={'myCanvas'}
               ref={(ref) => (this.canvas = ref)}
               style={{ border: "5px solid #d3d3d3"}}
