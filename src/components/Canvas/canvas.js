@@ -22,7 +22,6 @@ class Canvas extends Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.endPaintEvent = this.endPaintEvent.bind(this);
-    this.onImageChange = this.onImageChange.bind(this);
   }
 
   componentDidMount() {
@@ -35,8 +34,8 @@ class Canvas extends Component {
     this.ctx.lineWidth = 10;
 
     // This is how canvas takes the text
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Hello World", 10, 50);
+    // this.ctx.font = "30px Arial";
+    // this.ctx.fillText("Hello World", 10, 50);
   }
 
   componentDidUpdate() {
@@ -131,32 +130,23 @@ class Canvas extends Component {
     this.componentDidMount()
   }
 
-  onImageChange = event  => {
-    // When we upload an image we do this process
-    var ctx = document.getElementById('myCanvas').getContext('2d')
-    let img = new Image()
-    let f = event.target.files[0]
-    let url = window.URL || window.webkitURL
-    let src = url.createObjectURL(f);
+  // onImageChange = event  => {
+  //   // When we upload an image we do this process
+  //   var ctx = document.getElementById('myCanvas').getContext('2d')
+  //   let img = new Image()
+  //   let f = event.target.files[0]
+  //   let url = window.URL || window.webkitURL
+  //   let src = url.createObjectURL(f);
 
-    img.src = src;
-    this.setState({ cropImage: true })
-    this.setState({ srcImage: src })
+  //   img.src = src;
+  //   this.setState({ cropImage: true })
+  //   this.setState({ srcImage: src })
 
-    img.onload = function(){
-      ctx.drawImage(img,0,0);
-      url.revokeObjectURL(src);
-    }
-  }
-
-  _crop() {
-    // image in dataUrl
-    console.log(this.cropper.getCroppedCanvas().toDataURL());
-  }
-
-  onCropperInit(cropper) {
-    this.cropper = cropper;
-  }
+  //   img.onload = function(){
+  //     ctx.drawImage(img,0,0);
+  //     url.revokeObjectURL(src);
+  //   }
+  // }
 
   erase(){
     this.setState({ erase:  true })
@@ -174,24 +164,26 @@ class Canvas extends Component {
   }
 
   // Here we set the ref for the Webcam component. Without this it doesnt work.
-  setRef = webcam => {
-    this.webcam = webcam;
-  };
+
+  // setRef = webcam => {
+  //   this.webcam = webcam;
+  // };
 
   // We take the Webcam picture and upload it to the canvas
-  capture = () => {
-    const capturedImage = this.webcam.getScreenshot();
-    var ctx = document.getElementById('myCanvas').getContext('2d')
-    let img = new Image()
 
-    img.src = capturedImage;
+  // capture = () => {
+  //   const capturedImage = this.webcam.getScreenshot();
+  //   var ctx = document.getElementById('myCanvas').getContext('2d')
+  //   let img = new Image()
 
-    img.onload = function(){
-      ctx.drawImage(img,0,0);
-    }
-  };
+  //   img.src = capturedImage;
 
-  enableWebcam = () => this.setState({ webcamEnabled: true });
+  //   img.onload = function(){
+  //     ctx.drawImage(img,0,0);
+  //   }
+  // };
+
+  // enableWebcam = () => this.setState({ webcamEnabled: true });
 
   render() {
     return (
@@ -206,21 +198,7 @@ class Canvas extends Component {
             onMouseUp={this.endPaintEvent}
             onMouseMove={this.onMouseMove}
           />
-          { this.state.cropImage ? 
-          <div >
-            <Cropper
-            src={this.state.srcImage}
-            style={{height: 400, width: '100%', display: "flex", justifyContent: "center", zIndex: 100}}
-            initialAspectRatio={16 / 9}
-            guides={false}
-            crop={this._crop.bind(this)}
-            onInitialized={this.onCropperInit.bind(this)}
-            /> 
-            <button>Ok</button> 
-          </div>
-          : 
-          null}
-          { this.state.webcamEnabled ?
+          {/* { this.state.webcamEnabled ?
           <div>
             <Webcam
             audio={false}
@@ -235,7 +213,7 @@ class Canvas extends Component {
           <button type="button" onClick={this.enableWebcam}>
             Enable webcam
           </button>
-        }
+        } */}
         </div>
         <div className="row">
           <main>
@@ -248,7 +226,7 @@ class Canvas extends Component {
             <button class="clear" onClick={ () => this.setState({ image: null },  this.componentDidMount())}>X</button>
             <button  className="editSend" onClick={ () => this.createImg()}>Send</button>
             <button  className="editSend" onClick={ () => this.erase()}>Borrar</button>
-            <input className="editImg" type="file" name="myImage" onClick={ () => this.setState({ erase: false })} onChange={this.onImageChange}/>
+            {/* <input className="editImg" type="file" name="myImage" onClick={ () => this.setState({ erase: false })} onChange={this.onImageChange}/> */}
         </main>
         </div>
       </div>

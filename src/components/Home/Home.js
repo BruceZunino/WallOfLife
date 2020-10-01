@@ -29,24 +29,11 @@ class Home extends Component {
             </nav>
           </div>
           <div className="row canvas">
-          {this.state.createWall 
-          ?
             <Canvas/>
-          :
-            <canvas
-              id={'myCanvas'}
-              ref={(ref) => (this.canvas = ref)}
-              style={{ border: "5px solid #d3d3d3"}}
-            />
-          }
-          
           </div>
-          <div className="row justify-content-end createWallRow">
-            <button type="button" className=" btn-primary createWall col-12" onClick={() => this.onCreateWall()} >NEW</button> 
-          </div>
-          <div className="progress progress-bar-vertical" style={{ transform: 'rotate(270deg)', width: '30%', position: 'absolute'}}>
+          {/* <div className="progress progress-bar-vertical" style={{ transform: 'rotate(270deg)', width: '30%', position: 'absolute'}}>
             <div className="progress-bar" role="progress-bar" style={{ }}> N of 300</div>
-          </div>
+          </div> */}
         </div>
       );
     }
