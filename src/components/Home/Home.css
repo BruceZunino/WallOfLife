@@ -26,9 +26,3 @@
     border: none !important;
     outline: none !important;
 }
-
-@media only screen and (max-height: 800px){
-    .canvas{
-        height: 100vh;
-    } 
-}

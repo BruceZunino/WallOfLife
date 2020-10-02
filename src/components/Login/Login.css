@@ -3,7 +3,6 @@
 
 .formLogin{
     width: 40%;
-    margin-top: 5%;
 }
 
 .loginButton{
@@ -13,4 +12,8 @@
 
 .registerButton{
     border-radius: 30px;
+}
+
+.passInput{
+    margin-bottom: 4%;
 }

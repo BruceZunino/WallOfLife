@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Styles from './canvas.css'
 import $ from 'jquery'
-import Webcam from 'react-webcam';
-import Cropper from 'react-cropper';
+// import Webcam from 'react-webcam';
+// import Cropper from 'react-cropper';
+// import { fabric } from 'fabric';
 
 
 class Canvas extends Component {
@@ -15,7 +16,9 @@ class Canvas extends Component {
       erase: false,
       webcamEnabled: false,
       cropImage: false,
-      srcImage: ''
+      srcImage: '',
+      id: 0,
+      data: []
     }
 
     // Binding this functions, we let them work
@@ -33,6 +36,7 @@ class Canvas extends Component {
     this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 10;
 
+    this.changeId();
     // This is how canvas takes the text
     // this.ctx.font = "30px Arial";
     // this.ctx.fillText("Hello World", 10, 50);
@@ -96,6 +100,18 @@ class Canvas extends Component {
     this.prevPos = { offsetX, offsetY };
   }
 
+  changeId(){
+    fetch('http://localhost:5050/data')
+    .then(res => res.json())
+    .then((data) => {
+      this.setState({ data: data })
+      const lastItem = data[data.length - 1]
+      this.setState({ id: lastItem.id + 1});
+      console.log("last Id: ", lastItem);
+    })
+    .catch(console.log)
+  }
+
   createImg(){
     var d = new Date();
     var n = d.toString();
@@ -106,7 +122,8 @@ class Canvas extends Component {
     var datos = {
       "user": "Bruce",
       "img": dataURL,
-      "created_at": n
+      "created_at": n,
+      "id": this.state.id
     }
 
     fetch('http://localhost:5050/data', {
@@ -127,6 +144,7 @@ class Canvas extends Component {
     });
 
     // We call this component to refresh the canvas
+    this.setState({ id: this.state.id += 1})
     this.componentDidMount()
   }
 
@@ -220,8 +238,8 @@ class Canvas extends Component {
             <section class="colors">
               <input className="color-picker" type="color" id="color" value={this.state.color} onChange={this.handleChange.bind(this)}/>
             </section>
-            <section class="thickness">
-              <input type="number" class="stroke-weight" value={this.state.stroke} onChange={this.handleChange2.bind(this)}/>
+            <section>
+              <input type="range" min="1" max="100" step="10" class="stroke-weight" value={this.state.stroke} onChange={this.handleChange2.bind(this)}/>
             </section>
             <button class="clear" onClick={ () => this.setState({ image: null },  this.componentDidMount())}>X</button>
             <button  className="editSend" onClick={ () => this.createImg()}>Send</button>

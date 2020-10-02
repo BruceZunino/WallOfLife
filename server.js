@@ -42,7 +42,7 @@ app.get('/data', function(req, res){
 });
 
 app.post('/data', function (req, res) {
-  var sql =  `INSERT INTO data (user, img, created_at) VALUES ('${req.body.user}', '${req.body.img}', '${req.body.created_at}');`
+  var sql =  `INSERT INTO data (user, img, created_at, id) VALUES ('${req.body.user}', '${req.body.img}', '${req.body.created_at}', '${req.body.id}');`
 
   connection.query(sql, function (err) {
     if (err) throw err

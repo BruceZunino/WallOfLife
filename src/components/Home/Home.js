@@ -10,10 +10,6 @@ class Home extends Component {
       }
     }
 
-  onOpenProfile(){
-    alert("Abierto")
-  }
-
   onCreateWall(){
     this.setState({ createWall: true });
   }
@@ -21,13 +17,6 @@ class Home extends Component {
     render() {
       return (
         <div className="container-fluid">
-          <div className="row">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light col-lg-12">
-              <button type="button" style={{ height: "8vh", border: " none" }} onClick={() => this.onOpenProfile()} >
-              <img src={require('../../assets/profile.png')} style={{ height: "8vh", border: " none" }}/>
-              </button>
-            </nav>
-          </div>
           <div className="row canvas">
             <Canvas/>
           </div>
