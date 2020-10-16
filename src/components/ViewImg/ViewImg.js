@@ -87,6 +87,7 @@ spiral(n) {
           var grey = 256 - pos[2] * 16;
           elt.css({
               left: 900 + 120 * pos[0],
+              // right: (900 + 120 * pos[0])/2,
               top: 400 + 120 * pos[1],
                   "background-color": "rgba(" + grey * (1 + pos[2] % 3) + "," + grey * (1 + pos[2] % 2) + "," + grey * (1 + pos[2] % 4) + "," + 255 + ")"
           });

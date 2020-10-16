@@ -1,68 +1,84 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom'
 import Styles from './canvas.css'
 import $ from 'jquery'
 // import Webcam from 'react-webcam';
 // import Cropper from 'react-cropper';
-// import { fabric } from 'fabric';
+
+// import { Stage, Layer, Text, Rect } from "react-konva";
+
+import { fabric } from "fabric";
+
+import Tabletop from "tabletop";
+
+function Canvas() {
+
+    const [image, setImage] = useState([]);
+    const [color, setColor] = useState('#000000');
+    const [stroke, setStroke] = useState(10);
+    const [erase, setErase] = useState(false);
+    const [srcImage, setSrcImage] = useState('');
+    let [id, setId] = useState(0);
+    const [data, setData] = useState([]);
+    const [drawMode, setDrawMode] = useState(false);
 
 
-class Canvas extends Component {
-  constructor(props) {
-    super(props);
-    this.state={
-      image: null,
-      color: '#000000',
-      stroke: 10,
-      erase: false,
-      webcamEnabled: false,
-      cropImage: false,
-      srcImage: '',
-      id: 0,
-      data: []
-    }
+  useEffect(() => {
 
-    // Binding this functions, we let them work
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseMove = this.onMouseMove.bind(this);
-    this.endPaintEvent = this.endPaintEvent.bind(this);
-  }
+    let canvas = new fabric.Canvas("myCanvas", {
+      isDrawingMode: drawMode
+    });
+    
+    let textbox = new fabric.Textbox("Double click to write", {
+      fontSize: 20,
+      left: 50,
+      top: 100,
+      width: 200
+    });
+    canvas.add(textbox);
 
-  componentDidMount() {
-    // Here we set up the properties of the canvas element.
-    this.canvas.width = 700;
-    this.canvas.height = 700;
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineCap = 'round';
-    this.ctx.lineWidth = 10;
+    changeId();
 
-    this.changeId();
-    // This is how canvas takes the text
-    // this.ctx.font = "30px Arial";
-    // this.ctx.fillText("Hello World", 10, 50);
-  }
+    // function Addtext() {
+    //   var text = new fabric.IText("Tap & type", {
+    //     fontSize: 30,
+    //     top: 10,
+    //     left: 10,
+    //     width: 200,
+    //     height: 200,
+    //     textAlign: "center"
+    //   });
+    //   canvas.add(text);
+    //   canvas.setActiveObject(text);
+    //   text.enterEditing();
+    //   text.selectAll();
+    //   canvas.renderAll();  // or canvas.renderAll();
+    //   canvas.isDrawingMode = false;
+    // }
 
-  componentDidUpdate() {
-    // When the lineWidth changes, we update the stroke
-    this.ctx.lineWidth = this.state.stroke;
-  }
+  },[])
 
+    
+
+
+  
   // We define global parameters that are used in certains functions
-  cameraStream = null;
-  isPainting = false;
-  line = [];
-  prevPos = { offsetX: 0, offsetY: 0 };
+  // cameraStream = null;
+  let isPainting = false;
+  let line = [];
+  let prevPos = { offsetX: 0, offsetY: 0 };
 
-  onMouseDown({ nativeEvent }) {
+
+   function onMouseDown({ nativeEvent }) {
     const { offsetX, offsetY } = nativeEvent;
     const offSetData = { offsetX, offsetY}
-    this.isPainting = true;
-    this.prevPos = { offsetX, offsetY };
-    this.paint(this.prevPos, offSetData, this.state.color);
+    isPainting = true;
+    prevPos = { offsetX, offsetY };
+    paint(prevPos, offSetData, color);
   }
-
-  onMouseMove({ nativeEvent }) {
-    if (this.isPainting) {
+ 
+   function onMouseMove({ nativeEvent }) {
+    if (isPainting) {
       const { offsetX, offsetY } = nativeEvent;
       
       const offSetData = { offsetX, offsetY };
@@ -72,17 +88,17 @@ class Canvas extends Component {
         stop: { ...offSetData },
       };
       // Add the position to the line array
-      this.line = this.line.concat(positionData);
-      this.paint(this.prevPos, offSetData, this.state.color);
+      line = line.concat(positionData);
+      paint(prevPos, offSetData, color);
     }
   }
-  endPaintEvent() {
-    if (this.isPainting) {
-      this.isPainting = false;
+  function endPaintEvent() {
+    if (isPainting) {
+      isPainting = false;
     }
   }
 
-  paint(prevPos, currPos, strokeStyle) {
+  function paint(prevPos, currPos, strokeStyle) {
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = prevPos;
 
@@ -100,19 +116,19 @@ class Canvas extends Component {
     this.prevPos = { offsetX, offsetY };
   }
 
-  changeId(){
+  function changeId(){
     fetch('http://localhost:5050/data')
     .then(res => res.json())
     .then((data) => {
-      this.setState({ data: data })
+      setData(data)
       const lastItem = data[data.length - 1]
-      this.setState({ id: lastItem.id + 1});
+      setId(lastItem.id + 1);
       console.log("last Id: ", lastItem);
     })
     .catch(console.log)
   }
 
-  createImg(){
+  function createImg(){
     var d = new Date();
     var n = d.toString();
     var canvas = document.getElementById('myCanvas');
@@ -123,7 +139,7 @@ class Canvas extends Component {
       "user": "Bruce",
       "img": dataURL,
       "created_at": n,
-      "id": this.state.id
+      "id": id
     }
 
     fetch('http://localhost:5050/data', {
@@ -143,9 +159,8 @@ class Canvas extends Component {
       console.error('Error:', error);
     });
 
+    setId( id += 1);
     // We call this component to refresh the canvas
-    this.setState({ id: this.state.id += 1})
-    this.componentDidMount()
   }
 
   // onImageChange = event  => {
@@ -166,20 +181,24 @@ class Canvas extends Component {
   //   }
   // }
 
-  erase(){
-    this.setState({ erase:  true })
-  }
+  // function erase(){
+  //   setErase(true)
+  //   endPaintEvent();
+  // }
 
-  handleChange(event) {
+  function handleChange(event) {
     // This function is to change the color from the color picker
     this.setState({color: event.target.value})
-    this.setState({erase: false})
+    this.setState({erase: false});
+    endPaintEvent()
   }
 
-  handleChange2(event) {
+  function handleChange2(event) {
     // This function is to change the color from the lineWidth
-    this.setState({stroke: event.target.value})
+    this.setState({stroke: event.target.value});
+    this.endPaintEvent()
   }
+
 
   // Here we set the ref for the Webcam component. Without this it doesnt work.
 
@@ -203,19 +222,25 @@ class Canvas extends Component {
 
   // enableWebcam = () => this.setState({ webcamEnabled: true });
 
-  render() {
+  function setMode(canvas){
+    canvas.isDrawingMode = true
+    console.log(canvas)
+  }
+
     return (
       <div className="container-fluid">
         <div className="row canvas">
           <canvas
-            id={'myCanvas'}
-            ref={(ref) => (this.canvas = ref)}
-            style={{ border: "5px solid #d3d3d3", backgroundColor: "white"}}
-            onMouseDown={this.onMouseDown}
-            onMouseLeave={this.endPaintEvent}
-            onMouseUp={this.endPaintEvent}
-            onMouseMove={this.onMouseMove}
+            id='myCanvas'
+            // ref={(ref) => (this.canvas = ref)}
+            style={{ border: "5px solid #d3d3d3",}}
+            width="700"
+            height="800"
+            // onMouseDown={this.onMouseDown}
+            // onMouseUp={this.endPaintEvent}
+            // onMouseMove={this.onMouseMove}
           />
+
           {/* { this.state.webcamEnabled ?
           <div>
             <Webcam
@@ -235,20 +260,20 @@ class Canvas extends Component {
         </div>
         <div className="row">
           <main>
-            <section class="colors">
-              <input className="color-picker" type="color" id="color" value={this.state.color} onChange={this.handleChange.bind(this)}/>
+            <section className="colors">
+              <input className="color-picker" type="color" id="color" defaultValue={color}/>
             </section>
             <section>
-              <input type="range" min="1" max="100" step="10" class="stroke-weight" value={this.state.stroke} onChange={this.handleChange2.bind(this)}/>
+              <input type="range" min="1" max="100" step="10" className="stroke-weight" defaultValue={stroke}/>
             </section>
-            <button class="clear" onClick={ () => this.setState({ image: null },  this.componentDidMount())}>X</button>
-            <button  className="editSend" onClick={ () => this.createImg()}>Send</button>
-            <button  className="editSend" onClick={ () => this.erase()}>Borrar</button>
-            {/* <input className="editImg" type="file" name="myImage" onClick={ () => this.setState({ erase: false })} onChange={this.onImageChange}/> */}
+            {/* <button  onClick={ () =>componentDidMount()}>X</button> */}
+            <button  className="editSend" onClick={() => {createImg()}}>Send</button>
+            <button  className="editSend" onClick={() => {setMode()}}>Text</button>
+            {/* <input  type="file" name="myImage" onClick={ () => this.setState({ erase: false })} onChange={this.onImageChange}/> */}
         </main>
         </div>
       </div>
     );
-  }
 }
+
 export default Canvas;
